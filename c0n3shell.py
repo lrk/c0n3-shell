@@ -22,6 +22,7 @@ class C0n3Shell(Cmd):
     _ignore_certs=None
     _headers=None
     _data=None
+
     # _Cookies=None
     _options = {
         'url': 'http://localhost/shell.php',
@@ -44,7 +45,7 @@ class C0n3Shell(Cmd):
         # cookies=None
         ):
 
-        self.prompt = 'C0n3 > '
+        self.updatePrompt()
         self._http_verb = http_verb.lower() if http_verb != None and len(http_verb) > 0 else 'get'
         self._options['url']=url
         self._options['attribute']=attribute
@@ -59,6 +60,9 @@ class C0n3Shell(Cmd):
 
     def default(self,args):
         self.cmdHandler(args)
+
+    def updatePrompt(self):
+        self.prompt = '\033[01;32m{} - {} \033[0m> '.format('c0n3',self._options['pwd'])
 
     def banner(self):
         print(BANNER)
@@ -102,7 +106,7 @@ class C0n3Shell(Cmd):
                     try:
                         if result != None and len(result)>0:
                             result = result[result.find(self._options['marker'])+len(self._options['marker'])+1:]
-                            result = result[:result.find(self._options['marker'])]
+                            result = result[:result.rfind(self._options['marker'])]
                         return result
                     except:
                         return response.text
@@ -113,7 +117,7 @@ class C0n3Shell(Cmd):
         except Exception as ex:
             print('[!] Error: {}'.format(ex))
 
-    def setOptions(self,args):
+    def setOption(self,args):
         try:
             args = args.split(' ')
             self._options[args[0]] = args[1]
@@ -128,7 +132,13 @@ class C0n3Shell(Cmd):
             print("\t{}: {}".format(name,value))
 
     def getPwd(self):
-        return ''
+        path=self.sendToShell('pwd')
+        path='{}'.format(path)
+        path=path.strip()
+        if len(path)>0:
+            self._options['pwd']=path
+
+        self.updatePrompt()
 
     def quitCmd(self,args):
         quit()
@@ -140,7 +150,7 @@ class C0n3Shell(Cmd):
         'help': helpCmd,
         'h': helpCmd,
         '?': helpCmd,
-        'set':  setOptions,
+        'set':  setOption,
         'options': showOptions,
         # 'put':  uploadFileCmd,
         # 'get':  downloadFileCmd,
