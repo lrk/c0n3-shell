@@ -3,6 +3,17 @@ from urllib.parse import quote
 from lxml import html
 from cmd import Cmd
 
+BANNER = """\033[01;32m\n
+          __  _____ _____ _   _  _____   _____ _   _  _____ _      _      __
+         / / /  __ \\  _  | \\ | ||____ | /  ___| | | ||  ___| |    | |     \\ \\
+ ______ / /  | /  \\/ |/' |  \\| |    / / \\ `--.| |_| || |__ | |    | |      \\ \\ ______
+|______< <   | |   |  /| | . ` |    \\ \\  `--. \\  _  ||  __|| |    | |       > >______|
+        \\ \\  | \\__/\\ |_/ / |\\  |.___/ / /\\__/ / | | || |___| |____| |____  / /
+         \\_\\  \\____/\\___/\\_| \\_/\\____/  \\____/\\_| |_/\\____/\\_____/\\_____/ /_/\033[0m\n
+"""
+
+
+
 class C0n3Shell(Cmd):
 
     # Shall we display the raw results ?
@@ -39,8 +50,13 @@ class C0n3Shell(Cmd):
         self._headers=headers
         self._data=data
         # self._Cookies=cookies
+        self.banner()
         Cmd.__init__(self)
         self.showOptions(None)
+
+    def banner(self):
+        print(BANNER)
+        print('')
 
     def cmdHandler(self,cmd):
 
