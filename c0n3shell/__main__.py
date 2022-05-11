@@ -13,7 +13,6 @@ if __name__ == '__main__':
                         help='parameter', default='cmd')
 
     args = parser.parse_args()
-    print(args)
     shell = C0n3Shell(
         url=args.target,
         http_verb=args.http_verb,
