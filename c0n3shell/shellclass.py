@@ -97,7 +97,6 @@ class C0n3Shell(Cmd):
 
             print('[!] Sending payload: {}'.format(payload))
 
-            get_url = 
             response = requests.request(
                 self._options['http_verb'],
                 '{}{}{}={}'.format(self._options['url'],'&' if self._options['append'] else '?' ,self._options['attribute'], quote(payload)) if self._options['http_verb'] not in ['post','put'] else self._options['url'],

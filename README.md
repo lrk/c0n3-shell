@@ -43,6 +43,14 @@ shell = C0n3Shell(url='http://127.0.0.1/index.php')
 shell.cmdloop()
 ```
 
+or 
+
+```
+cd c0n3-shell
+pip3 install -r requirements.txt
+python3 -m c0n3shell -h
+```
+
 # Available options
 
 - http_verb: the http method to use, default `get`
